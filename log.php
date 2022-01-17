@@ -7,6 +7,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 
+$filename = readline("Nome do arquivo: ");
 // echo($logs);
 
 $dir = getcwd() . "/logs/";
@@ -15,7 +16,8 @@ $files = array_filter(scandir($dir, 1), function($item) {
     return !is_dir(getcwd() . "/logs/" . $item);
 });
 
-var_dump($files);
+
+
 
 $zero_start = new Carbon("00:00:00");
 $zero_end = new Carbon("00:59:59");
@@ -32,7 +34,7 @@ $three_end = new Carbon("03:59:59");
 $four_start = new Carbon("04:00:00");
 $four_end = new Carbon("04:59:59");
 
-$five_start = new Carbon("00:05:00");
+$five_start = new Carbon("05:00:00");
 $five_end = new Carbon("05:59:59");
 
 $six_start = new Carbon("06:00:00");
@@ -135,6 +137,13 @@ $count = 2;
 foreach ($files as $file ) {
     $filelog = file("logs/" . $file);
 
+    // $a = str_replace(["\n", "."], ["", ""], file_get_contents("logs/" . $file));
+    // preg_match_all("\[(.*?)\]",$a , $some);
+    // preg_match_all("/\[[^\]]*\]/",$a , $some);
+    // $some = preg_split('/([.*?])/', $a , null, PREG_SPLIT_DELIM_CAPTURE);
+    // var_dump($some);
+    // echo(count($filelog) . "\n");
+
     $logs = file_get_contents("logs/" . $file);
     echo($file . "\n");
     echo(" Total de mensagens aprovadas : " . preg_match_all("/Mensagem enviada ao Sigma/", $logs) . "\n");
@@ -168,18 +177,25 @@ foreach ($files as $file ) {
         "23:00" => 0,
         
     ];
+
+
+
     foreach ($filelog as $log) {
-        $parts = explode("]", $log);
+        $space = str_replace(",", " ", $log);
+        $replace = str_replace(["[", "]"],["", ","], $space);
+        $parts = explode(",",$replace);
+
+        // $parts = explode("]", $log);
         
         if (preg_match("/Mensagem enviada ao Sigma/", $log) || preg_match("/Mensagem recusada/", $log)){
             // print_r(substr($parts[0], 1) );
             // print_r("\n");
  
-            if (count($parts) < 4) continue;
+            if (! is_array($parts) || count($parts) < 4) continue;
 
 
             try {
-                $time = new Carbon(substr($parts[0], 1));
+                $time = new Carbon($parts[0]);
 
             } catch (Exception $e) {
                 var_dump($file);
@@ -187,99 +203,100 @@ foreach ($files as $file ) {
                 var_dump(substr($parts[0], 1));
                 // echo("CONTADOOOOOOOOOOOO:    " . count($parts));
             }
-            // print_r("\n");
+            // echo($time->toTimeString() ."\n");
 
-            if ($time->between($zero_start, $zero_end)) {
+            // print_r("\n");
+            if ($time->betweenIncluded($zero_start, $zero_end) ) {
                 $interval["00:00"] ++ ;
             }
 
-            if ($time->between($one_start, $one_end)) {
+            if ($time->betweenIncluded($one_start, $one_end)) {
                 $interval["01:00"] ++ ;
             }
 
-            if ($time->between($two_start, $two_end)) {
+            if ($time->betweenIncluded($two_start, $two_end)) {
                 $interval["02:00"] ++ ;
             }
 
-            if ($time->between($three_start, $three_end)) {
+            if ($time->betweenIncluded($three_start, $three_end)) {
                 $interval["03:00"] ++ ;
             }
 
-            if ($time->between($four_start, $four_end)) {
+            if ($time->betweenIncluded($four_start, $four_end)) {
                 $interval["04:00"] ++ ;
             }
 
-            if ($time->between($five_start, $five_end)) {
+            if ($time->betweenIncluded($five_start, $five_end)) {
                 $interval["05:00"] ++ ;
             }
 
-            if ($time->between($six_start, $six_end)) {
+            if ($time->betweenIncluded($six_start, $six_end)) {
                 $interval["06:00"] ++ ;
             }
 
-            if ($time->between($seven_start, $seven_end)) {
+            if ($time->betweenIncluded($seven_start, $seven_end)) {
                 $interval["07:00"] ++ ;
             }
             
-            if ($time->between($eight_start, $eight_end)) {
+            if ($time->betweenIncluded($eight_start, $eight_end)) {
                 $interval["08:00"] ++ ;
             }
 
-            if ($time->between($nine_start, $nine_end)) {
+            if ($time->betweenIncluded($nine_start, $nine_end)) {
                 $interval["09:00"] ++ ;
             }
 
-            if ($time->between($ten_start, $ten_end)) {
+            if ($time->betweenIncluded($ten_start, $ten_end)) {
                 $interval["10:00"] ++ ;
             }
 
-            if ($time->between($eleven_start, $eleven_end)) {
+            if ($time->betweenIncluded($eleven_start, $eleven_end)) {
                 $interval["11:00"] ++ ;
             }
 
-            if ($time->between($twelve_start, $twelve_end)) {
+            if ($time->betweenIncluded($twelve_start, $twelve_end)) {
                 $interval["12:00"] ++ ;
             }
 
-            if ($time->between($thirteen_start, $thirteen_end)) {
+            if ($time->betweenIncluded($thirteen_start, $thirteen_end)) {
                 $interval["13:00"] ++ ;
             }
 
-            if ($time->between($fourteen_start, $fourteen_end)) {
+            if ($time->betweenIncluded($fourteen_start, $fourteen_end)) {
                 $interval["14:00"] ++ ;
             }
 
-            if ($time->between($fifteen_start, $fifteen_end)) {
+            if ($time->betweenIncluded($fifteen_start, $fifteen_end)) {
                 $interval["15:00"] ++ ;
             }
 
-            if ($time->between($sixteen_start, $sixteen_end)) {
+            if ($time->betweenIncluded($sixteen_start, $sixteen_end)) {
                 $interval["16:00"] ++ ;
             }
 
-            if ($time->between($seventeen_start, $seventeen_end)) {
+            if ($time->betweenIncluded($seventeen_start, $seventeen_end)) {
                 $interval["17:00"] ++ ;
             }
 
-            if ($time->between($eighteen_start, $eighteen_end)) {
+            if ($time->betweenIncluded($eighteen_start, $eighteen_end)) {
                 $interval["18:00"] ++ ;
             }
 
-            if ($time->between($nineteen_start, $nineteen_end)) {
+            if ($time->betweenIncluded($nineteen_start, $nineteen_end)) {
                 $interval["19:00"] ++ ;
             }
 
-            if ($time->between($twenty_start, $twenty_end)) {
+            if ($time->betweenIncluded($twenty_start, $twenty_end)) {
                 $interval["20:00"] ++ ;
             }
 
-            if ($time->between($twenty_one_start, $twenty_one_end)) {
+            if ($time->betweenIncluded($twenty_one_start, $twenty_one_end)) {
                 $interval["21:00"] ++ ;
             }
-            if ($time->between($twenty_two_start, $twenty_two_end)) {
+            if ($time->betweenIncluded($twenty_two_start, $twenty_two_end)) {
                 $interval["22:00"] ++ ;
             }
-            if ($time->between($twenty_three_start, $twenty_three_end)) {
+            if ($time->betweenIncluded($twenty_three_start, $twenty_three_end)) {
                 $interval["23:00"] ++ ;
             }
             
@@ -321,6 +338,6 @@ foreach ($files as $file ) {
 
 
 $writer = new Xlsx($spreadsheet);
-$writer->save('teste1.xlsx');
+$writer->save($filename .'.xlsx');
 
 ?>
