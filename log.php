@@ -4,19 +4,34 @@ require __DIR__ . "/vendor/autoload.php";
 
 use Carbon\Carbon;
 use Src\AnalizeSheet;
+use Src\LogProcessing;
 use Src\CounterTimeMessage;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+// $filename = readline("Nome do arquivo: ");
 
-$filename = readline("Nome do arquivo: ");
-// echo($logs);
+$logs_dir = __DIR__ . "/logs/";
+$temp_dir =  __DIR__ . "/temp/processed/";
+
+
+
+LogProcessing::clearBreakLine($logs_dir, $temp_dir);
+
+LogProcessing::analize($temp_dir, getcwd());
+
+
+exit("Terminamos aqui \n");
+
+
+
+
+
 
 $dir = getcwd() . "/logs/";
 
 $files = array_filter(scandir($dir, 1), function($item) {
     return !is_dir(getcwd() . "/logs/" . $item);
 });
-
 
 $analize = new AnalizeSheet();
 
@@ -41,15 +56,12 @@ foreach ($files as $file ) {
 
     $counter_time = new CounterTimeMessage();
 
-    // $a = 0;
     for ($i=0; $i < count($log_exploded); $i+=4) {
         print_r($log_exploded[$i]. "\n");
 
         if (preg_match("/Mensagem enviada ao Sigma/", $log_exploded[$i]) || preg_match("/Mensagem recusada/", $log_exploded[$i])){
 
             try {
-                // $index = $i - 3; 
-          
 
                 $string_time = str_replace(["[", "]"], "", $log_exploded[$i - 3]);
                 $time = new Carbon($string_time);
@@ -64,7 +76,6 @@ foreach ($files as $file ) {
         }
     }
 
-    // // var_dump($counter_time->getInterval());
     break;
 
 

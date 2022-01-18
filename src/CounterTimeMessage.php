@@ -108,76 +108,76 @@ class CounterTimeMessage
     
     public function __construct() {
 
-        $this->zero_start = new Carbon("00:00:00");
+        $this->zero_start = new Carbon("00:00:00.000");
         $this->zero_end = new Carbon("00:59:59.999");
          
-        $this->one_start = new Carbon("01:00:00");
+        $this->one_start = new Carbon("01:00:00.000");
         $this->one_end = new Carbon("01:59:59.999");
      
-        $this->two_start = new Carbon("02:00:00");
+        $this->two_start = new Carbon("02:00:00.000");
         $this->two_end = new Carbon("02:59:59.999");
      
-        $this->three_start = new Carbon("03:00:00");
+        $this->three_start = new Carbon("03:00:00.000");
         $this->three_end = new Carbon("03:59:59.999");
      
-        $this->four_start = new Carbon("04:00:00");
+        $this->four_start = new Carbon("04:00:00.000");
         $this->four_end = new Carbon("04:59:59.999");
      
-        $this->five_start = new Carbon("05:00:00");
+        $this->five_start = new Carbon("05:00:00.000");
         $this->five_end = new Carbon("05:59:59.999");
      
-        $this->six_start = new Carbon("06:00:00");
+        $this->six_start = new Carbon("06:00:00.000");
         $this->six_end = new Carbon("06:59:59.999");
      
-        $this->seven_start = new Carbon("07:00:00");
+        $this->seven_start = new Carbon("07:00:00.000");
         $this->seven_end = new Carbon("07:59:59.999");
      
-        $this->eight_start = new Carbon("08:00:00");
+        $this->eight_start = new Carbon("08:00:00.000");
         $this->eight_end = new Carbon("08:59:59.999");
      
-        $this->nine_start = new Carbon("09:00:00");
+        $this->nine_start = new Carbon("09:00:00.000");
         $this->nine_end = new Carbon("09:59:59.999");
      
-        $this->ten_start = new Carbon("10:00:00");
+        $this->ten_start = new Carbon("10:00:00.000");
         $this->ten_end = new Carbon("10:59:59.999");
      
-        $this->eleven_start = new Carbon("11:00:00");
+        $this->eleven_start = new Carbon("11:00:00.000");
         $this->eleven_end = new Carbon("11:59:59.999");
      
-        $this->twelve_start = new Carbon("12:00:00");
+        $this->twelve_start = new Carbon("12:00:00.000");
         $this->twelve_end = new Carbon("12:59:59.999");
      
-        $this->thirteen_start = new Carbon("13:00:00");
+        $this->thirteen_start = new Carbon("13:00:00.000");
         $this->thirteen_end = new Carbon("13:59:59.999");
      
-        $this->fourteen_start = new Carbon("14:00:00");
+        $this->fourteen_start = new Carbon("14:00:00.000");
         $this->fourteen_end = new Carbon("14:59:59.999");
      
-        $this->fifteen_start = new Carbon("15:00:00");
+        $this->fifteen_start = new Carbon("15:00:00.000");
         $this->fifteen_end = new Carbon("15:59:59.999");
      
-        $this->sixteen_start = new Carbon("16:00:00");
+        $this->sixteen_start = new Carbon("16:00:00.000");
         $this->sixteen_end = new Carbon("16:59:59.999");
      
-        $this->seventeen_start = new Carbon("17:00:00");
+        $this->seventeen_start = new Carbon("17:00:00.000");
         $this->seventeen_end = new Carbon("17:59:59.999");
      
-        $this->eighteen_start = new Carbon("18:00:00");
+        $this->eighteen_start = new Carbon("18:00:00.000");
         $this->eighteen_end = new Carbon("18:59:59.999");
      
-        $this->nineteen_start = new Carbon("19:00:00");
+        $this->nineteen_start = new Carbon("19:00:00.000");
         $this->nineteen_end = new Carbon("19:59:59.999");
      
-        $this->twenty_start = new Carbon("20:00:00");
+        $this->twenty_start = new Carbon("20:00:00.000");
         $this->twenty_end = new Carbon("20:59:59.999");
      
-        $this->twenty_one_start = new Carbon("21:00:00");
+        $this->twenty_one_start = new Carbon("21:00:00.000");
         $this->twenty_one_end = new Carbon("21:59:59.999");
      
-        $this->twenty_two_start = new Carbon("22:00:00");
+        $this->twenty_two_start = new Carbon("22:00:00.000");
         $this->twenty_two_end = new Carbon("22:59:59.999");
      
-        $this->twenty_three_start = new Carbon("23:00:00");
+        $this->twenty_three_start = new Carbon("23:00:00.000");
         $this->twenty_three_end = new Carbon("23:59:59.999");
     }
 
@@ -308,6 +308,6 @@ class CounterTimeMessage
             return;
         }
 
-        echo ( "\n\n\n\n" . "ESSE AQUI DEU MERDA " . $time->toTimeString() ."\n\n\n\n" );
+        exit ( "\n\n\n\n" . "ESSE AQUI DEU MERDA " . $time->toTimeString() ."\n\n\n\n" );
     }
 }
