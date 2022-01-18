@@ -1,7 +1,14 @@
 {
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+
+        }
+    },
     "require": {
         "monolog/monolog": "1.0.*",
         "nesbot/carbon": "^2.55",
         "phpoffice/phpspreadsheet": "^1.21"
     }
+
 }
