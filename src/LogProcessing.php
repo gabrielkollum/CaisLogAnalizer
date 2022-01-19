@@ -17,7 +17,7 @@ class LogProcessing
             echo "Tratando o arquivo: " . $file . PHP_EOL;
             $content = file_get_contents($log_folder . $file);
             $replaced = preg_replace(["/[A-Z0-9.\-\_\s]{1}[\n]+/i", "/[\n]+[A-Z0-9.\-\_\s]{1}/i"], " ", $content);
-            $result = fopen($temp_folder . "processed_" . $file, "w") or die("Nao deu");
+            $result = fopen($temp_folder . $file, "w") or die("Nao deu");
             fwrite($result,$replaced);
             fclose($result);        
         }
@@ -71,9 +71,9 @@ class LogProcessing
                 }
 
             }
-            // var_dump($counter_time->getInterval());
 
-            $analize->writeCounter($count, $total_send, $total_refuse, $total_message, $file, $counter_time->getInterval());
+
+            $analize->writeCounter($count, $total_send, $total_refuse, $total_message, str_replace(".log", "",$file), $counter_time->getInterval());
 
             $count ++ ;
         }
