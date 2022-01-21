@@ -80,5 +80,73 @@ class AnalizeSheet
         $this->sheet->setCellValue('AA' . $count, $interval['22:00']);
         $this->sheet->setCellValue('AB' . $count, $interval['23:00']);
     }
+
+    public function writeIndividualStatistic(array $final_statistic): void
+    {
+        $statistic_sheet = $this->spreadsheet->createSheet();
+        $statistic_sheet->setTitle("Estatisticas Individuais");
+        $statistic_sheet->getDefaultColumnDimension()->setWidth(0.73, 'cm');
+        $statistic_sheet->setCellValue('A1', 'Operador');
+        $column = 2;
+        $opr_row = [];
+        $row_counter = 2;
+        // var_dump($final_statistic);
+        foreach ($final_statistic as $index => $days ) {
+            $index == 0 ? "" : $column += 3;
+
+            foreach($days as $day => $count) {
+                // echo ($day . PHP_EOL);
+                $sn_column = $column;
+                $d_column = $column + 1;
+                $en_column = $column + 2;
+
+                $statistic_sheet->setCellValueByColumnAndRow($column, 1, $day);
+                $statistic_sheet->mergeCellsByColumnAndRow($column, 1, ($column + 2), 1);
+                $statistic_sheet->setCellValueByColumnAndRow($sn_column, 2, 'SN');
+                $statistic_sheet->setCellValueByColumnAndRow($d_column , 2, 'D');
+                $statistic_sheet->setCellValueByColumnAndRow($en_column, 2, 'EN');
+
+                foreach ($count as $operator_name => $counter) {
+
+                    if (! array_key_exists($operator_name, $opr_row)) {
+                        $row_counter++;
+                        $opr_row[$operator_name] = $row_counter;
+                        $statistic_sheet->setCellValueByColumnAndRow(1, $opr_row[$operator_name], $operator_name);
+                        // echo $operator_name . " ". $row_counter . PHP_EOL;
+                    }
+
+                    foreach ($counter as $turn => $amount) {
+                        // echo $operator_name . " " . $day . " " . $turn . " " . $amount . PHP_EOL;
+                        // switch ($turn) {
+                        //     case 'SN':
+                        //         $statistic_sheet->setCellValueByColumnAndRow($sn_column, $opr_row[$operator_name], $amount);
+                        //         break;
+                        //     case 'D':
+                        //         $statistic_sheet->setCellValueByColumnAndRow($d_column, $opr_row[$operator_name], $amount);
+                        //         break;
+                        //     case 'EN':
+                        //         $statistic_sheet->setCellValueByColumnAndRow($en_column, $opr_row[$operator_name], $amount);
+                        //         break;
+
+                        // }
+
+                        if ($turn == 'SN') {
+                            $statistic_sheet->setCellValueByColumnAndRow($sn_column, $opr_row[$operator_name], $amount);
+                        } elseif ( $turn == 'D') {
+                            $statistic_sheet->setCellValueByColumnAndRow($d_column, $opr_row[$operator_name], $amount);
+                        } elseif ( $turn == 'EN') {
+                            $statistic_sheet->setCellValueByColumnAndRow($en_column, $opr_row[$operator_name], $amount);
+                        }
+                            
+                    }
+                }
+            }
+
+            // echo $index . PHP_EOL;
+        }
+        var_dump($opr_row);
+
+    }
+
         
 }

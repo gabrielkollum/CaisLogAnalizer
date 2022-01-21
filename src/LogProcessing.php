@@ -60,7 +60,7 @@ class LogProcessing
 
     public static function onlyFiles($folder):array
     {
-       return array_filter(scandir($folder, 1), function($item) {
+       return array_filter(scandir($folder,SCANDIR_SORT_ASCENDING), function($item) {
             return ! is_dir($item);
         });
     }
@@ -73,6 +73,7 @@ class LogProcessing
         $files = self::onlyFiles($processed_folder);
 
         $analize = new AnalizeSheet();
+        $final_statistic = [];
 
         $count = 2;
 
@@ -82,11 +83,13 @@ class LogProcessing
             $total_send = preg_match_all($regex_send, $log_content);
             $total_refuse = preg_match_all($regex_refuse, $log_content);
             $total_message = $total_send + $total_refuse;
+            $file_name = str_replace(".log", "",$file);
+            // array_push($final_statistc, $final_statistc[$file_name][]);
 
-            echo($file . "\n");
-            echo(" Total de mensagens aprovadas : " . $total_send . "\n");
-            echo(" Total de mensagens recusadas : " . $total_refuse . "\n");
-            echo(" TOTAL DE MENSAGENS : " . $total_message . "\n \n");
+            // echo($file . "\n");
+            // echo(" Total de mensagens aprovadas : " . $total_send . "\n");
+            // echo(" Total de mensagens recusadas : " . $total_refuse . "\n");
+            // echo(" TOTAL DE MENSAGENS : " . $total_message . "\n \n");
 
             $counter_time = new CounterTimeMessage();
 
@@ -116,42 +119,46 @@ class LogProcessing
                 }           
 
             }
-
-            $final_statistc = [];
+            
+            $statistic[$file_name] = [];
             $start_daylight = new Carbon("10:00:00");
             $end_daylight = new Carbon("22:00:00");
             foreach($operators as $operator => $times) {
                 foreach ($times as $time) {
                     if ($time->betweenIncluded($start_daylight, $end_daylight)){
-                        if  (! array_key_exists($operator, $final_statistc)){
-                            $final_statistc[$operator] = ["D" => 1];
+                        if  (! array_key_exists($operator, $statistic[$file_name])){
+                            $statistic[$file_name][$operator] = ["D" => 1];
                         } else {
-                            array_key_exists("D",$final_statistc[$operator]) ? $final_statistc[$operator]["D"]++ : $final_statistc[$operator] = ["D" => 1] ;
+                            array_key_exists("D",$statistic[$file_name][$operator]) ? $statistic[$file_name][$operator]["D"]++ : $statistic[$file_name][$operator] = ["D" => 1] ;
                         }
                     } elseif ($time->lessThan($start_daylight)) {
-
-                        if  (! array_key_exists($operator, $final_statistc)){
-                            $final_statistc[$operator] = ["SN" => 1];
+                        if  (! array_key_exists($operator, $statistic[$file_name])){
+                            $statistic[$file_name][$operator] = ["SN" => 1];
                         } else {
-                            array_key_exists("SN",$final_statistc[$operator]) ? $final_statistc[$operator]["SN"]++ : $final_statistc[$operator] = ["SN" => 1] ;
+                            array_key_exists("SN",$statistic[$file_name][$operator]) ? $statistic[$file_name][$operator]["SN"]++ : $statistic[$file_name][$operator] = ["SN" => 1] ;
                         }
                     } elseif ($time->greaterThan($start_daylight)) {
 
-                        if  (! array_key_exists($operator, $final_statistc)){
+                        if  (! array_key_exists($operator, $statistic[$file_name])){
                             
                         } else {
-                            array_key_exists("EN",$final_statistc[$operator]) ? $final_statistc[$operator]["EN"]++ : $final_statistc[$operator] = ["EN" => 1] ;
+                            array_key_exists("EN",$statistic[$file_name][$operator]) ? $statistic[$file_name][$operator]["EN"]++ : $statistic[$file_name][$operator] = ["EN" => 1] ;
                         }
                     } 
                 }
             }
-            var_dump($final_statistc);
-            exit();
+            // var_dump($statistic);
+            array_push($final_statistic, $statistic);
 
-            $analize->writeCounter($count, $total_send, $total_refuse, $total_message, str_replace(".log", "",$file), $counter_time->getInterval());
+            $analize->writeCounter($count, $total_send, $total_refuse, $total_message, $file_name, $counter_time->getInterval());
 
+
+            
             $count ++ ;
         }
+
+        // var_dump($final_statistic);
+        $analize->writeIndividualStatistic($final_statistic);
 
         return $analize;
     }
