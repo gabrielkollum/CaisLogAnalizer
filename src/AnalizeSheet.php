@@ -2,6 +2,7 @@
 
 namespace Src;
 
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class AnalizeSheet
@@ -81,72 +82,128 @@ class AnalizeSheet
         $this->sheet->setCellValue('AB' . $count, $interval['23:00']);
     }
 
+    public function newWorksheet(string $month)
+    {
+        $new_sheet = $this->spreadsheet->createSheet();
+        $new_sheet->setTitle($month);
+        $new_sheet->getDefaultColumnDimension()->setWidth(0.73, 'cm');
+        $new_sheet->setCellValue('A1', 'Operador');
+    }
+
+    public function worksheet(string $date)
+    {
+        $time = new Carbon($date);
+        $month = Month::from($time->month)->string();
+
+        $worksheet = $this->spreadsheet->getSheetByName($month) ?? false;
+
+        if (! $worksheet) {
+            $worksheet = $this->spreadsheet->createSheet();
+            $worksheet->setTitle($month);
+            $worksheet->getDefaultColumnDimension()->setWidth(0.73, 'cm');
+            $worksheet->setCellValue('A1', 'Operador');
+
+            return [$this->spreadsheet->getSheetByName($month), $month];
+        }
+        
+        return [$worksheet, $month];
+
+    }
+
     public function writeIndividualStatistic(array $final_statistic): void
     {
         $statistic_sheet = $this->spreadsheet->createSheet();
         $statistic_sheet->setTitle("Estatisticas Individuais");
         $statistic_sheet->getDefaultColumnDimension()->setWidth(0.73, 'cm');
         $statistic_sheet->setCellValue('A1', 'Operador');
+
+        $column_counter = [];
         $column = 2;
         $opr_row = [];
         $row_counter = 2;
-        // var_dump($final_statistic);
-        foreach ($final_statistic as $index => $days ) {
-            $index == 0 ? "" : $column += 3;
 
-            foreach($days as $day => $count) {
-                // echo ($day . PHP_EOL);
-                $sn_column = $column;
-                $d_column = $column + 1;
-                $en_column = $column + 2;
+        $date_counter = [];
 
-                $statistic_sheet->setCellValueByColumnAndRow($column, 1, $day);
-                $statistic_sheet->mergeCellsByColumnAndRow($column, 1, ($column + 2), 1);
+        foreach ($final_statistic as $date => $data) {
+
+            [$statistic_sheet, $month] = $this->worksheet($date);
+
+
+
+            if (! array_key_exists($month, $column_counter)) {
+                $column_counter[$month] = 2;
+            }
+
+
+            $sn_column = $column_counter[$month];
+            $d_column = $column_counter[$month] + 1;
+            $en_column = $column_counter[$month] + 2;
+
+            if (! in_array($date , $date_counter)) {
+                $date_counter[] = $date;
+
+                $statistic_sheet->setCellValueByColumnAndRow($column_counter[$month], 1, $date);
+                $statistic_sheet->mergeCellsByColumnAndRow($column_counter[$month], 1, ($column_counter[$month] + 2), 1);
                 $statistic_sheet->setCellValueByColumnAndRow($sn_column, 2, 'SN');
                 $statistic_sheet->setCellValueByColumnAndRow($d_column , 2, 'D');
                 $statistic_sheet->setCellValueByColumnAndRow($en_column, 2, 'EN');
 
-                foreach ($count as $operator_name => $counter) {
+            }
+            // if (! $index == 0) {
+            //     $column_counter[$month]+= 3;
+            // }
 
-                    if (! array_key_exists($operator_name, $opr_row)) {
-                        $row_counter++;
-                        $opr_row[$operator_name] = $row_counter;
-                        $statistic_sheet->setCellValueByColumnAndRow(1, $opr_row[$operator_name], $operator_name);
-                        // echo $operator_name . " ". $row_counter . PHP_EOL;
-                    }
+            // var_dump($column_counter[$month]);
+            // exit();
+            // $index == 0 ? "" : $column += 3;
 
-                    foreach ($counter as $turn => $amount) {
-                        // echo $operator_name . " " . $day . " " . $turn . " " . $amount . PHP_EOL;
-                        // switch ($turn) {
-                        //     case 'SN':
-                        //         $statistic_sheet->setCellValueByColumnAndRow($sn_column, $opr_row[$operator_name], $amount);
-                        //         break;
-                        //     case 'D':
-                        //         $statistic_sheet->setCellValueByColumnAndRow($d_column, $opr_row[$operator_name], $amount);
-                        //         break;
-                        //     case 'EN':
-                        //         $statistic_sheet->setCellValueByColumnAndRow($en_column, $opr_row[$operator_name], $amount);
-                        //         break;
 
-                        // }
 
-                        if ($turn == 'SN') {
-                            $statistic_sheet->setCellValueByColumnAndRow($sn_column, $opr_row[$operator_name], $amount);
-                        } elseif ( $turn == 'D') {
-                            $statistic_sheet->setCellValueByColumnAndRow($d_column, $opr_row[$operator_name], $amount);
-                        } elseif ( $turn == 'EN') {
-                            $statistic_sheet->setCellValueByColumnAndRow($en_column, $opr_row[$operator_name], $amount);
-                        }
-                            
+            foreach ($data as $operator_name => $count) {
+ 
+                if (! array_key_exists($month, $opr_row)) {
+                    $opr_row[$month] = [];
+
+                }
+
+                if (! in_array($operator_name, $opr_row[$month])) {
+                    $row_counter++;
+                    $opr_row[$month][] = $operator_name;
+                    $statistic_sheet->setCellValueByColumnAndRow(1, array_search($operator_name, $opr_row[$month]) + 3, $operator_name);
+                    // array_push($opr_row[$month], $operator_name);
+                    // $opr_row[$month][$operator_name] = $row_counter;
+                    // $statistic_sheet->setCellValueByColumnAndRow(1, $opr_row[$month][$operator_name], $operator_name);
+                }
+
+                $row = array_search($operator_name, $opr_row[$month]) + 3;
+                // var_dump();
+                // exit();
+
+                foreach($count as $turn => $amount) {
+ 
+                    switch ($turn) {
+                        case 'SN':
+                            $statistic_sheet->setCellValueByColumnAndRow($sn_column, $row, $amount);
+                            break;
+                        case 'D':
+                            $statistic_sheet->setCellValueByColumnAndRow($d_column, $row, $amount);
+                            break;
+                        case 'EN':
+                            $statistic_sheet->setCellValueByColumnAndRow($en_column, $row, $amount);
+                            break;
+
                     }
                 }
             }
 
-            // echo $index . PHP_EOL;
+            $column_counter[$month] += 3;
+
         }
-        var_dump($opr_row);
 
-    }
-
-        
+        // var_dump($opr_row['dezembro']);
+        // foreach($opr_row['dezembro'] as $test) {
+        //     echo($test . PHP_EOL);
+        // }
+        // exit();
+    }        
 }

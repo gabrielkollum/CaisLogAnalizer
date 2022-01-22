@@ -73,7 +73,6 @@ class LogProcessing
         $files = self::onlyFiles($processed_folder);
 
         $analize = new AnalizeSheet();
-        $final_statistic = [];
 
         $count = 2;
 
@@ -120,36 +119,38 @@ class LogProcessing
 
             }
             
-            $statistic[$file_name] = [];
+            $statistic = [];
             $start_daylight = new Carbon("10:00:00");
             $end_daylight = new Carbon("22:00:00");
             foreach($operators as $operator => $times) {
                 foreach ($times as $time) {
                     if ($time->betweenIncluded($start_daylight, $end_daylight)){
-                        if  (! array_key_exists($operator, $statistic[$file_name])){
-                            $statistic[$file_name][$operator] = ["D" => 1];
+                        if  (! array_key_exists($operator, $statistic)){
+                            $statistic[$operator] = ["D" => 1];
                         } else {
-                            array_key_exists("D",$statistic[$file_name][$operator]) ? $statistic[$file_name][$operator]["D"]++ : $statistic[$file_name][$operator] = ["D" => 1] ;
+                            array_key_exists("D",$statistic[$operator]) ? $statistic[$operator]["D"]++ : $statistic[$operator] = ["D" => 1] ;
                         }
                     } elseif ($time->lessThan($start_daylight)) {
-                        if  (! array_key_exists($operator, $statistic[$file_name])){
-                            $statistic[$file_name][$operator] = ["SN" => 1];
+                        if  (! array_key_exists($operator, $statistic)){
+                            $statistic[$operator] = ["SN" => 1];
                         } else {
-                            array_key_exists("SN",$statistic[$file_name][$operator]) ? $statistic[$file_name][$operator]["SN"]++ : $statistic[$file_name][$operator] = ["SN" => 1] ;
+                            array_key_exists("SN",$statistic[$operator]) ? $statistic[$operator]["SN"]++ : $statistic[$operator] = ["SN" => 1] ;
                         }
                     } elseif ($time->greaterThan($start_daylight)) {
 
-                        if  (! array_key_exists($operator, $statistic[$file_name])){
+                        if  (! array_key_exists($operator, $statistic)){
                             
                         } else {
-                            array_key_exists("EN",$statistic[$file_name][$operator]) ? $statistic[$file_name][$operator]["EN"]++ : $statistic[$file_name][$operator] = ["EN" => 1] ;
+                            array_key_exists("EN",$statistic[$operator]) ? $statistic[$operator]["EN"]++ : $statistic[$operator] = ["EN" => 1] ;
                         }
                     } 
                 }
             }
             // var_dump($statistic);
-            array_push($final_statistic, $statistic);
+            $final_statistic[$file_name] = $statistic;
 
+            // var_dump($month);
+            // exit();
             $analize->writeCounter($count, $total_send, $total_refuse, $total_message, $file_name, $counter_time->getInterval());
 
 
